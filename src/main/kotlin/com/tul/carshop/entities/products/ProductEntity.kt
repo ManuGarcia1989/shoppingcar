@@ -5,16 +5,16 @@ import java.util.UUID
 
 
 @Entity
-class Product{
+class Product(
     @Id
-    val sku: String = UUID.randomUUID().toString()
+    val sku: UUID = UUID.randomUUID(),
     @Column(unique = true, nullable = false)
-    var name: String? = null
-    var description:String? = null
-    var price:Double? = 0.0
+    var name: String? = null,
+    var description:String? = null,
+    var price:Double? = 0.0,
     var discount: Boolean = false
-
-
+)
+{
 
     override fun equals(other: Any?): Boolean {
         other ?: return false
