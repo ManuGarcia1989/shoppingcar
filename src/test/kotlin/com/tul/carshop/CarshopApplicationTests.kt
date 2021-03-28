@@ -19,9 +19,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.junit.Assert
 import org.springframework.test.web.servlet.MockMvcBuilder
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import java.util.*
 
 
 @RunWith(SpringRunner::class)
@@ -46,13 +48,30 @@ class CarshopApplicationTests {
 	@Test
 	fun findAll() {
 		val productsFromService = productService.findAll()
-		val json = mockMvc.perform(MockMvcRequestBuilders.get(Router.BASE_ROUTE + Router.PRODUCTS))
+		val products: List<Product> = mockMvc.perform(MockMvcRequestBuilders.get(Router.BASE_ROUTE + Router.PRODUCTS))
 				.andExpect(status().isOk)
-				.andReturn().response.contentAsString
-
-		val products: List<Product> = mapper.readValue(json)
+				.bodyTo(mapper)
 
 		assertThat(productsFromService, Matchers.`is`(Matchers.equalTo(products)))
 	}
+	@Test
+	fun findById(){
+		val productFromService = productService.findAll()
+		assert(!productFromService.isEmpty()){"Should not be empty"}
+		val product = productFromService.first()
+
+		mockMvc.perform(MockMvcRequestBuilders.get(Router.BASE_ROUTE+Router.PRODUCTS+Router.PRODUCT_BY_ID+"/${product.sku}"))
+				.andExpect(status().isOk)
+				.andExpect(jsonPath("$.sku",Matchers.`is`(product.sku)))
+	}
+
+	@Test
+	fun findByEmpty(){
+		mockMvc.perform(MockMvcRequestBuilders.get(Router.BASE_ROUTE+Router.PRODUCTS+"/${UUID.randomUUID()}"))
+				.andExpect(status().isOk)
+				.andExpect(jsonPath("$").doesNotExist())
+	}
+
+
 
 }
