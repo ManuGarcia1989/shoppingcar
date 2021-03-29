@@ -2,7 +2,6 @@ package com.tul.carshop.services.products
 
 import com.tul.carshop.entities.Product
 import com.tul.carshop.repositories.ProductRepository
-import com.tul.carshop.utils.update
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -17,7 +16,7 @@ class ProductService(private val productRepository: ProductRepository): Products
 
     override fun findById(id: UUID): Product? = this.productRepository.findByIdOrNull(id)
 
-    override fun save(t: Product): Product {
+    override fun save( t: Product): Product {
         return if(!this.productRepository.existsById(t.sku)) this.productRepository.save(t) else throw DuplicateKeyException("${t.name} does exists")
     }
 
