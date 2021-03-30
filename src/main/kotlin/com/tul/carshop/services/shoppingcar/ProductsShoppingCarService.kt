@@ -86,7 +86,7 @@ class ProductsShoppingCarService(private val shoppingCarProductRepo: ShoppingCar
             TotalPrice += clientProduct.finalPrice!!
             this.shoppingCarProductRepo.save(clientProduct)
         }
-        val response = ShoppingCarCheckOut(  total = TotalPrice, user = UUID.fromString(client) )
+        val response = ShoppingCarCheckOut( products = clientProducts ,total = TotalPrice, user = UUID.fromString(client) )
         return if(clientProducts.size > 0 ) response else throw  EntityNotFoundException("$client does not exists")
     }
 

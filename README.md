@@ -43,7 +43,6 @@ El manejo de los estados debe hacerse con enumerables
 
 - [Architecture used](#Architecture)
 - [Technologies and tools](#Technologies)
-- [Installation](#Installation)
 - [API](#API)
 - [Coverage](#Coverage)
 - [Contributors](#Contributors)
@@ -66,17 +65,6 @@ El manejo de los estados debe hacerse con enumerables
 * [IDEA IntelliJ] - IDE
 -------
 
-# Installation
-
-
-| Requires | URL |
-| ------ | ------ |
-| Git | https://git-scm.com/downloads |
-| Docker | https://docs.docker.com/engine/install/ |
-| Compose | https://docs.docker.com/compose/install/ |
-
-
-
 # API
 - Swagger
 ```
@@ -92,11 +80,11 @@ jdbc URL = jdbc:h2:mem:testdb
 
 - Base URL
 ```
-{{ host }}/api/*
+{{ host }}/api/ecommerce/*
 ```
 - Health Check
 ```
-curl -L -X GET 'localhost:8080/api/ecommerce/products/health'
+'localhost:8080/api/ecommerce/products/health'
 ```
 - Info
 ```
