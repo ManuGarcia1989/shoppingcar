@@ -10,81 +10,70 @@ import java.util.*
 import javax.persistence.EntityNotFoundException
 
 @Service
-class ProductsShoppingCarService(private val shoppingCarRespository: ShoppingCarRespository): ProductsShoppingCarInterface<UUID,ShoppingCarProduct, UUID,Product,Int> {
+class ProductsShoppingCarService(private val shoppingCarProductRepo: ShoppingCarRespository): ProductsShoppingCarInterface<String,ShoppingCarProduct, String,Product,Int> {
 
-    override fun findAll(): List<ShoppingCarProduct> {
-        return this.shoppingCarRespository.findAll()
-    }
+    override fun findAll(): List<ShoppingCarProduct> = this.shoppingCarProductRepo.findAll()
 
-    override fun findById(id:UUID): ShoppingCarProduct? = this.shoppingCarRespository.findByIdOrNull(id)
+    override fun findById(id:String): ShoppingCarProduct? = this.shoppingCarProductRepo.findByIdOrNull(UUID.fromString(id))
 
-    override fun findByClient(cl: UUID): List<ShoppingCarProduct>?{
-        val all = this.findAll()
-        var tempList:MutableList<ShoppingCarProduct> = mutableListOf()
+    override fun findByClient(client: String): List<ShoppingCarProduct>{
+        val all = this.shoppingCarProductRepo.findAll()
+        var tempList:List<ShoppingCarProduct> = emptyList()
         for(sc in all){
-            if(sc.user==cl)
-                tempList.add(sc)
+            if(sc.user== UUID.fromString(client))
+                tempList += sc
         }
-        return tempList
+
+        return if(tempList.size > 0) tempList else throw  EntityNotFoundException("$client does not exists")
     }
 
 
-     override fun cleanCar(cl: UUID): Boolean {
-         var response  = false
+     override fun cleanCar(client: String): Boolean {
          val all = this.findAll()
+         var response = false
          for(product in all)
-            if(product.user == cl) {
-                this@ProductsShoppingCarService.shoppingCarRespository.deleteById(product.id)
+            if(product.user == UUID.fromString(client)) {
+                this@ProductsShoppingCarService.shoppingCarProductRepo.deleteById(product.id)
                 response = true
             }
-         return response
+         return if(response) response else throw EntityNotFoundException("$client does not exists")
     }
 
-   override fun deleteProduct(id: UUID): ShoppingCarProduct {
+   override fun deleteProduct(id: String): ShoppingCarProduct {
        return this.findById(id)?.apply {
-           this@ProductsShoppingCarService.shoppingCarRespository.deleteById(this.id)
+           this@ProductsShoppingCarService.shoppingCarProductRepo.deleteById(this.id)
        } ?: throw EntityNotFoundException("$id does not exists")
     }
 
-    override fun addProduct(cl: UUID, pr: Product, cua: Int): ShoppingCarProduct{
-        val clientProducts: List<ShoppingCarProduct>? = this.findByClient(cl)
+    override fun addProduct(shoppingCarProduct: ShoppingCarProduct): ShoppingCarProduct{
+        val clientProducts: List<ShoppingCarProduct> = shoppingCarProductRepo.findAll()
+        println("Empieza servicio")
         var exist = false
-        if (clientProducts != null) {
-            if(clientProducts.isNotEmpty())
-                for(shoppingCarProduct in clientProducts){
-                    //if(shoppingCarProduct.product.sku == pr.sku){
-                        exist = true
-                    //}
-                }
+        for(shoppingCarProduct_ in clientProducts){
+            if(shoppingCarProduct_.user == shoppingCarProduct.user && shoppingCarProduct_.product == shoppingCarProduct.product){
+                exist = true
+            }
         }
         if(!exist) {
-            var finalPrice = pr.price * cua
-            if(pr.discount) finalPrice/2.0
-            val objTemp = ShoppingCarProduct(user = cl,product = pr,cuantity = cua, finalPrice = finalPrice)
-            println("Creadoooooooooooooooo")
-            return this.shoppingCarRespository.save(objTemp)
-        } else {
-            println("No Creadoooooooooooooooo")
-            return throw DuplicateKeyException("${pr.name} does in shopping car from ${cl.toString()}")
+            val finalPrice = shoppingCarProduct.product.price * shoppingCarProduct.cuantity
+            if(shoppingCarProduct.product.discount) finalPrice/2.0
+            return this.shoppingCarProductRepo.save(shoppingCarProduct)
+        } else throw DuplicateKeyException("${shoppingCarProduct.product.name} does in shopping car from ${shoppingCarProduct.user.toString()}")
 
-        }
     }
 
-    override fun editProduct(cl: UUID, pr: Product, cua: Int): ShoppingCarProduct {
-        val clientProducts = this.findByClient(cl).orEmpty()
+    override fun editProduct(shoppingCarProduct: ShoppingCarProduct): ShoppingCarProduct {
+        val clientProducts = this.findByClient(shoppingCarProduct.user.toString()).orEmpty()
         var exist = false
-        for(shoppingCarProduct in clientProducts){
-            //if(shoppingCarProduct.product.sku == pr.sku){
+        for(shoppingCarProduct_ in clientProducts){
+            if(shoppingCarProduct_.user == shoppingCarProduct.user && shoppingCarProduct_.product == shoppingCarProduct.product){
                 exist = true
-            //}
+            }
         }
         if(exist) {
-            var finalPrice = pr.price * cua
-            if(pr.discount) finalPrice/2.0
-            val objTemp = ShoppingCarProduct(user = cl,product = pr,cuantity = cua, finalPrice = finalPrice)
-            return this.shoppingCarRespository.save(objTemp)
+            return this.shoppingCarProductRepo.save(shoppingCarProduct)
         }
-        else throw DuplicateKeyException("${pr.name} does not in shopping car from ${cl.toString()}")
+        else throw EntityNotFoundException("${shoppingCarProduct.product.name} does not in shopping car from ${shoppingCarProduct.user.toString()}")
     }
 
 

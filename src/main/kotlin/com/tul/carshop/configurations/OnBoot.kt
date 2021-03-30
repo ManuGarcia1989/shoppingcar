@@ -1,6 +1,7 @@
 package com.tul.carshop.configurations
 
 import com.tul.carshop.entities.Product
+import com.tul.carshop.entities.ShoppingCarProduct
 import com.tul.carshop.services.products.ProductService
 import com.tul.carshop.services.shoppingcar.ProductsShoppingCarService
 import org.springframework.boot.ApplicationArguments
@@ -18,7 +19,9 @@ class OnBoot(private val productService: ProductService,private val shoppingCarS
         listOf(productOne,productTwo).forEach{
             productService.save(it)
         }
-        shoppingCarService.addProduct(cl = clientOne,pr = productOne,cua = 2)
-        shoppingCarService.addProduct(cl=clientTwo, pr = productTwo,cua = 4)
+        val scProduct1 = ShoppingCarProduct(user = clientOne,product = productOne,cuantity = 2)
+        val scProduct2 = ShoppingCarProduct(user = clientTwo,product = productTwo,cuantity = 5)
+        shoppingCarService.addProduct(scProduct1)
+        shoppingCarService.addProduct(scProduct2)
     }
 }

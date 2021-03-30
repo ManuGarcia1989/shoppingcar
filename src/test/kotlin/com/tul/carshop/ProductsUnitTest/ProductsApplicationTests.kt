@@ -134,7 +134,9 @@ class ProductsApplicationTests {
         val productsFromService = productService.findAll()
         assert(!productsFromService.isEmpty()){"Should not be empty"}
         val product = productsFromService.last()
-        val productFromApi : Product = mockMvc.perform(MockMvcRequestBuilders.delete(Router.BASE_ROUTE+ Router.PRODUCTS+ "/delete_by_id/"+product.sku.toString()))
+        println(product)
+        println(product.sku)
+        val productFromApi : Product = mockMvc.perform(MockMvcRequestBuilders.delete(Router.BASE_ROUTE+ Router.PRODUCTS+ "/delete_by_id/${product.sku.toString()}"))
             .andExpect(status().isOk)
             .bodyTo(mapper)
 
@@ -146,7 +148,5 @@ class ProductsApplicationTests {
        mockMvc.perform(MockMvcRequestBuilders.delete(Router.BASE_ROUTE+ Router.PRODUCTS+ "/delete_by_id/${UUID.randomUUID()}"))
             .andExpect(status().isConflict)
             .andExpect(jsonPath("$.title", Matchers.`is`("EntityNotFoundException")))
-
-
     }
 }

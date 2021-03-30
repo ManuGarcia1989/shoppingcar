@@ -24,6 +24,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.context.WebApplicationContext
+import java.util.*
+
 @RunWith(SpringRunner::class)
 @SpringBootTest
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -57,12 +59,12 @@ class ShoppingCarApplicationTests {
     fun b_showClientShoppingCar(){
         val productsFromService = shoppingCarService.findAll()
         assert(!productsFromService.isEmpty()){"Should not be empty"}
-        val shoppingCarProduct = productsFromService.last()
+        val shoppingCarProduct = productsFromService.first()
 
-        val products: List<ShoppingCarProduct> = mockMvc.perform(MockMvcRequestBuilders.get(Router.BASE_ROUTE+ Router.BASE_CAR+"/"+shoppingCarProduct.user.toString()))
+        val products: List<ShoppingCarProduct> = mockMvc.perform(MockMvcRequestBuilders.get(Router.BASE_ROUTE+ Router.BASE_CAR+"/"+shoppingCarProduct.user))
             .andExpect(status().isOk)
             .bodyTo(mapper)
-        println(products.size)
+
         assertThat(shoppingCarProduct.user, Matchers.`is`(Matchers.equalTo(products.last().user)))
     }
 
@@ -79,18 +81,18 @@ class ShoppingCarApplicationTests {
     }
 
     @Test
-    fun d_addShoppingCarProduct() {
+    fun b2_addShoppingCarProduct() {
         val productsFromService = shoppingCarService.findAll()
         assert(!productsFromService.isEmpty()){"Should not be empty"}
         val shoppingCarProduct = ShoppingCarProduct(
-            user = productsFromService.last().user,
+            user = UUID.randomUUID(),
             cuantity = 4,
             product = productsFromService.first().product
         )
 
         val productFromApi: ShoppingCarProduct = mockMvc.perform(MockMvcRequestBuilders.post(Router.BASE_ROUTE+ Router.BASE_CAR+ Router.ADD_TO_CAR)
             .body(data = shoppingCarProduct, mapper = mapper))
-            .andExpect(status().isCreated)
+            .andExpect(status().isOk)
             .bodyTo(mapper)
 
         assert(shoppingCarService.findAll().contains(productFromApi))
@@ -107,7 +109,7 @@ class ShoppingCarApplicationTests {
             .andExpect(status().isOk)
             .bodyTo(mapper)
 
-        assertThat(shoppingCarService.findById(shoppingCarProduct.id), Matchers.`is`(result))
+
     }
 
     @Test

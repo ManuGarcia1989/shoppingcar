@@ -1,5 +1,7 @@
 package com.tul.carshop.entities
 
+import org.hibernate.annotations.OnDelete
+import org.hibernate.annotations.OnDeleteAction
 import java.util.*
 import javax.persistence.Entity
 import javax.persistence.Id
@@ -12,11 +14,12 @@ data class ShoppingCarProduct(
     @Id
     val id: UUID = UUID.randomUUID(),
     @ManyToOne
-    var product: Product? = null,
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    var product: Product,
     var cuantity: Int = 0,
     var finalPrice : Double? = 0.0,
-    //
-    var user:UUID? = null,
+    //@ForeignKey
+    var user:UUID,
     var state: ShoppingCarStates? = ShoppingCarStates.PENDING
     )
 {

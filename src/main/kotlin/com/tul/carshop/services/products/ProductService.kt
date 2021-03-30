@@ -17,7 +17,7 @@ class ProductService(private val productRepository: ProductRepository): Products
     override fun findById(id: UUID): Product? = this.productRepository.findByIdOrNull(id)
 
     override fun save( t: Product): Product {
-        return if(!this.productRepository.existsById(t.sku)) this.productRepository.save(t) else throw DuplicateKeyException("${t.name} does exists")
+        return if(!this.productRepository.existsById(t.sku)) {this.productRepository.save(t)} else throw DuplicateKeyException("${t.name} does exists")
     }
 
     override fun update(t: Product): Product {
@@ -26,7 +26,7 @@ class ProductService(private val productRepository: ProductRepository): Products
 
     override fun deleteById(id: UUID):Product{
         return this.findById(id)?.apply {
-            this@ProductService.productRepository.deleteById(this.sku)
+            this@ProductService.productRepository.deleteById(id)
         }?:throw EntityNotFoundException("$id does not exists")
     }
 }

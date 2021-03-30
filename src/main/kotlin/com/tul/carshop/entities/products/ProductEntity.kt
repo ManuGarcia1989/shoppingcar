@@ -11,6 +11,7 @@ data class Product(
     @Column(unique = true, nullable = false)
     var name: String? = null,
     var description:String? = null,
+    
     var price:Double = 0.0,
     var discount: Boolean = false
 )
