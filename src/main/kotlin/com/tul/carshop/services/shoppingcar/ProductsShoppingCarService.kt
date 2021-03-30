@@ -2,6 +2,8 @@ package com.tul.carshop.services.shoppingcar
 
 import com.tul.carshop.entities.Product
 import com.tul.carshop.entities.ShoppingCarProduct
+import com.tul.carshop.entities.ShoppingCarStates
+import com.tul.carshop.entities.shoppincar.ShoppingCarCheckOut
 import com.tul.carshop.repositories.shoppingcar.ShoppingCarRespository
 import org.springframework.dao.DuplicateKeyException
 import org.springframework.data.repository.findByIdOrNull
@@ -74,6 +76,18 @@ class ProductsShoppingCarService(private val shoppingCarProductRepo: ShoppingCar
             return this.shoppingCarProductRepo.save(shoppingCarProduct)
         }
         else throw EntityNotFoundException("${shoppingCarProduct.product.name} does not in shopping car from ${shoppingCarProduct.user.toString()}")
+    }
+
+    override fun checkOut(client: String): ShoppingCarCheckOut {
+        val clientProducts: List<ShoppingCarProduct> = this.findByClient(client)
+        var TotalPrice:Double = 0.0
+        for(clientProduct in clientProducts){
+            clientProduct.state = ShoppingCarStates.COMPLETED
+            TotalPrice += clientProduct.finalPrice!!
+            this.shoppingCarProductRepo.save(clientProduct)
+        }
+        val response = ShoppingCarCheckOut(  total = TotalPrice, user = UUID.fromString(client) )
+        return if(clientProducts.size > 0 ) response else throw  EntityNotFoundException("$client does not exists")
     }
 
 

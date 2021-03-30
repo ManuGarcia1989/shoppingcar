@@ -24,6 +24,7 @@ class Router{
         const val EDIT_CAR = "/edit_product_car/{client}"
         const val DELETE_PRODUCT_CAR = "/delete_product/{id}"
         const val CLEAN_CAR = "/clean_car/{client}"
+        const val CHECKOUT = "/checkout/{client}"
 
     }
 }

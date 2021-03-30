@@ -2,6 +2,7 @@ package com.tul.carshop.controllers.shoppingcar
 
 import com.tul.carshop.entities.Product
 import com.tul.carshop.entities.ShoppingCarProduct
+import com.tul.carshop.entities.shoppincar.ShoppingCarCheckOut
 import com.tul.carshop.routes.Router
 import com.tul.carshop.services.shoppingcar.ProductsShoppingCarInterface
 import com.tul.carshop.services.shoppingcar.ProductsShoppingCarService
@@ -45,7 +46,7 @@ class ProductCarController (private val shoppingCarService: ProductsShoppingCarS
 
     @ApiOperation("Clean client shopping car")
     @DeleteMapping(Router.CLEAN_CAR)
-    override fun cleanCar(@PathVariable client: String):Any {
+    override fun cleanCar(@PathVariable client: String):Boolean {
         return shoppingCarService.cleanCar(client)
     }
 
@@ -53,6 +54,11 @@ class ProductCarController (private val shoppingCarService: ProductsShoppingCarS
     @DeleteMapping(Router.DELETE_PRODUCT_CAR)
     override fun deleteProduct(@PathVariable id:String) : ShoppingCarProduct{
         return shoppingCarService.deleteProduct(id)
+    }
+    @ApiOperation("Checkout from client shopping car")
+    @PutMapping(Router.CHECKOUT)
+    override fun checkOut(@PathVariable client: String): ShoppingCarCheckOut {
+        return shoppingCarService.checkOut(client)
     }
 
 }

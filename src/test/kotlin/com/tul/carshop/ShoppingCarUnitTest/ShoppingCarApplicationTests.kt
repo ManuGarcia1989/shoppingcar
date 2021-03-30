@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.tul.carshop.ProductsUnitTest.body
 import com.tul.carshop.ProductsUnitTest.bodyTo
 import com.tul.carshop.entities.ShoppingCarProduct
+import com.tul.carshop.entities.shoppincar.ShoppingCarCheckOut
 import com.tul.carshop.routes.Router
 import com.tul.carshop.services.shoppingcar.ProductsShoppingCarService
 import org.hamcrest.MatcherAssert.assertThat
@@ -46,7 +47,20 @@ class ShoppingCarApplicationTests {
     private lateinit var shoppingCarService: ProductsShoppingCarService
 
     @Test
-    fun a_findAll(){
+    fun a0_CheckoutByClientId(){
+        val productsFromService = shoppingCarService.findAll()
+        assert(!productsFromService.isEmpty()){"Should not be empty"}
+        val shoppingCarProduct = productsFromService.first()
+
+        val checkOut: ShoppingCarCheckOut = mockMvc.perform(MockMvcRequestBuilders.put(Router.BASE_ROUTE+ Router.BASE_CAR+"/checkout/"+shoppingCarProduct.user))
+            .andExpect(status().isOk)
+            .bodyTo(mapper)
+
+        assert(checkOut != null)
+    }
+
+    @Test
+    fun a9_findAll(){
         val productsFromService = shoppingCarService.findAll()
         val products: List<ShoppingCarProduct> = mockMvc.perform(MockMvcRequestBuilders.get(Router.BASE_ROUTE + Router.BASE_CAR+Router.SHOW_ALL_PRODUCTS_FOR_ALL_CLIENTS))
             .andExpect(MockMvcResultMatchers.status().isOk)
@@ -110,6 +124,7 @@ class ShoppingCarApplicationTests {
             .bodyTo(mapper)
 
 
+        assertThat(result.id, Matchers.`is`(shoppingCarProduct.id))
     }
 
     @Test

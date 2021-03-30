@@ -53,7 +53,7 @@ El manejo de los estados debe hacerse con enumerables
 
 # Architecture
 
-- A microservice is proposed that uses lightweight protocols such as HTTP or REST API and use Redis as a Distributed Cache of High-Performance (Microservices Architecture).
+- A microservice is proposed that uses lightweight protocols such as HTTP or REST API.
 - A service-oriented code architecture is proposed with routes, controllers, validators, entities and repository pattern (Clean code).
 ----
 
@@ -76,19 +76,6 @@ El manejo de los estados debe hacerse con enumerables
 | Compose | https://docs.docker.com/compose/install/ |
 
 
-## Environments
-
-For deployment you has set the next environments (examples)
-
-- EXCHANGE_RATE_API_KEY=<api_key>
-- APP_BASE_URL=http://127.0.0.1:8080
-- REQUESTS_TIMEOUT=1000
-- REDIS_HOST=127.0.0.1
-- REDIS_PORT=6379
-
-Note: to obtain an ExchangeRate API_KEY you must register and access the dashboard https://app.exchangerate-api.com/dashboard
-
-(The port by default that work the service is 8080)
 
 # API
 - Swagger
@@ -113,7 +100,7 @@ curl -L -X GET 'localhost:8080/api/ecommerce/products/health'
 ```
 - Info
 ```
-curl -L -X GET 'localhost:8080/api/ecommerce/info'
+{{ host }}/swagger-ui.html/*
 ```
 
 
